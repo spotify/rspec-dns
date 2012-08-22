@@ -87,6 +87,20 @@ Failure/Error: it { should have_dns.with_type('TXT').and_ftl(300).and_data('a=b'
 
 For this reason, you should always check the `type` attribute first in your chain.
 
+Configuring
+-----------
+All configurations must be in your project root at `config/dns.yml`. This YAML file directly corresponds to the Resolv DNS initializer.
+
+For example, to directly query your DNS servers (necessary for correct TTL tests), create a `config/dns.yml` file like this:
+
+```yaml
+nameserver:
+  - 1.2.3.5
+  - 6.7.8.9
+```
+
+The full list of configuration options can be found on the [Resolv docs](http://www.ruby-doc.org/stdlib-1.9.3/libdoc/resolv/rdoc/index.html).
+
 Contributing
 ------------
 1. Fork the project on github
