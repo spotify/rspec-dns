@@ -6,11 +6,11 @@ RSpec::Matchers.define :have_dns do
 
     _records.any? do |record|
       _options.all? do |option, value|
-        # Resolv returns an object instead of just the IP
-        if option == :address
-          record.send(option).to_s == value.to_s
+        # To distinguish types because not all Resolv returns have type
+        if option == :type
+          record.class.name.split('::').last == value.to_s
         else
-          record.send(option) == value
+          record.send(option).to_s == value.to_s
         end
       end
     end
