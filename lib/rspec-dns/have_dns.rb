@@ -25,7 +25,7 @@ RSpec::Matchers.define :have_dns do
   end
 
   description do
-    'have the correct dns entries'
+    "have the correct dns entries with #{_options}"
   end
 
   def method_missing(m, *args, &block)
