@@ -10,7 +10,11 @@ RSpec::Matchers.define :have_dns do
         if option == :type
           record.class.name.split('::').last == value.to_s
         else
-          record.send(option).to_s == value.to_s
+          if value.is_a? String
+            record.send(option).to_s == value
+          else
+            record.send(option) == value
+          end
         end
       end
     end
