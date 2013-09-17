@@ -99,6 +99,17 @@ nameserver:
   - 6.7.8.9
 ```
 
+If this file is missing Resolv will use the settings in /etc/resolv.conf.
+
+If you need to incrase the timeout above the [default](https://github.com/ruby/ruby/blob/trunk/lib/resolv.rb#L344) you can do so like this:
+
+```yaml
+nameserver:
+  - 1.2.3.5
+  - 6.7.8.9
+timeouts: 3
+```
+
 The full list of configuration options can be found on the [Resolv docs](http://www.ruby-doc.org/stdlib-1.9.3/libdoc/resolv/rdoc/index.html).
 
 Contributing
