@@ -86,7 +86,7 @@ RSpec::Matchers.define :have_dns do
           Resolv::DNS.new(_config).getresources(@dns, Resolv::DNS::Resource::IN::ANY)
         end
       }
-    rescue
+    rescue Timeout::Error
       $stderr.puts "Connection timed out for #{@dns}"
       []
     end
