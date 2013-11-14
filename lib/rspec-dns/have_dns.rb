@@ -43,6 +43,7 @@ RSpec::Matchers.define :have_dns do
 
   def _config
     @config ||= if File.exists?(_config_file)
+      require 'yaml'
       config = _symbolize_keys(YAML::load(ERB.new(File.read(_config_file) ).result))
     else
       nil
@@ -85,7 +86,7 @@ RSpec::Matchers.define :have_dns do
           Resolv::DNS.new(_config).getresources(@dns, Resolv::DNS::Resource::IN::ANY)
         end
       }
-    rescue
+    rescue Timeout::Error
       $stderr.puts "Connection timed out for #{@dns}"
       []
     end
