@@ -43,6 +43,7 @@ RSpec::Matchers.define :have_dns do
 
   def _config
     @config ||= if File.exists?(_config_file)
+      require 'yaml'
       config = _symbolize_keys(YAML::load(ERB.new(File.read(_config_file) ).result))
     else
       nil
