@@ -12,6 +12,8 @@ RSpec::Matchers.define :have_dns do
         else
           if value.is_a? String
             record.send(option).to_s == value
+          elsif value.is_a? Regexp
+            record.send(option).to_s =~ value
           else
             record.send(option) == value
           end
