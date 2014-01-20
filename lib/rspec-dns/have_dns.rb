@@ -3,9 +3,10 @@ require 'resolv'
 RSpec::Matchers.define :have_dns do
   match do |dns|
     @dns = dns
+    number_matched = 0
 
-    _records.any? do |record|
-      _options.all? do |option, value|
+    _records.each do |record|
+      matched = _options.all? do |option, value|
         # To distinguish types because not all Resolv returns have type
         if option == :type
           record.class.name.split('::').last == value.to_s
@@ -19,7 +20,20 @@ RSpec::Matchers.define :have_dns do
           end
         end
       end
+      number_matched += 1 if matched
+      matched
     end
+
+    if @at_least
+      number_matched >= @at_least
+    else
+      number_matched > 0
+    end
+
+  end
+
+  chain :at_least do |min_count|
+    @at_least = min_count
   end
 
   failure_message_for_should do |actual|
