@@ -3,7 +3,7 @@ require 'resolv'
 RSpec::Matchers.define :have_dns do
   match do |dns|
     @dns = dns
-    number_matched = 0
+    @number_matched = 0
 
     _records.each do |record|
       matched = _options.all? do |option, value|
@@ -20,14 +20,14 @@ RSpec::Matchers.define :have_dns do
           end
         end
       end
-      number_matched += 1 if matched
+      @number_matched += 1 if matched
       matched
     end
 
     if @at_least
-      number_matched >= @at_least
+      @number_matched >= @at_least
     else
-      number_matched > 0
+      @number_matched > 0
     end
 
   end
@@ -37,7 +37,11 @@ RSpec::Matchers.define :have_dns do
   end
 
   failure_message_for_should do |actual|
-    "expected #{actual} to have: #{_pretty_print_options}, but did not. other records were: #{_pretty_print_records}"
+    if @at_least
+      "expected #{actual} to have: #{@at_least} records of #{_pretty_print_options}, but found #{@number_matched}. Other records were: #{_pretty_print_records}"
+    else
+      "expected #{actual} to have: #{_pretty_print_options}, but did not. other records were: #{_pretty_print_records}"
+    end
   end
 
   failure_message_for_should_not do |actual|
