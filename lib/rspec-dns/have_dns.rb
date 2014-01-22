@@ -3,25 +3,45 @@ require 'resolv'
 RSpec::Matchers.define :have_dns do
   match do |dns|
     @dns = dns
+    @number_matched = 0
 
-    _records.any? do |record|
-      _options.all? do |option, value|
+    _records.each do |record|
+      matched = _options.all? do |option, value|
         # To distinguish types because not all Resolv returns have type
         if option == :type
           record.class.name.split('::').last == value.to_s
         else
           if value.is_a? String
             record.send(option).to_s == value
+          elsif value.is_a? Regexp
+            record.send(option).to_s =~ value
           else
             record.send(option) == value
           end
         end
       end
+      @number_matched += 1 if matched
+      matched
     end
+
+    if @at_least
+      @number_matched >= @at_least
+    else
+      @number_matched > 0
+    end
+
+  end
+
+  chain :at_least do |min_count|
+    @at_least = min_count
   end
 
   failure_message_for_should do |actual|
-    "expected #{actual} to have: #{_pretty_print_options}, but did not. other records were: #{_pretty_print_records}"
+    if @at_least
+      "expected #{actual} to have: #{@at_least} records of #{_pretty_print_options}, but found #{@number_matched}. Other records were: #{_pretty_print_records}"
+    else
+      "expected #{actual} to have: #{_pretty_print_options}, but did not. other records were: #{_pretty_print_records}"
+    end
   end
 
   failure_message_for_should_not do |actual|
