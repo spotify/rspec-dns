@@ -1,5 +1,9 @@
 require 'resolv'
 
+RSpec.configure do |c|
+  c.add_setting :rspec_dns_connection_timeout ,:default => 1
+end
+
 RSpec::Matchers.define :have_dns do
   match do |dns|
     @dns = dns
