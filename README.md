@@ -89,7 +89,10 @@ For this reason, you should always check the `type` attribute first in your chai
 
 Configuring
 -----------
-All configurations must be in your project root at `config/dns.yml`. This YAML file directly corresponds to the Resolv DNS initializer.
+
+### Configuring resolver
+
+Configurations for resolver must be in your project root at `config/dns.yml`. This YAML file directly corresponds to the Resolv DNS initializer.
 
 For example, to directly query your DNS servers (necessary for correct TTL tests), create a `config/dns.yml` file like this:
 
@@ -101,7 +104,7 @@ nameserver:
 
 If this file is missing Resolv will use the settings in /etc/resolv.conf.
 
-If you need to incrase the timeout above the [default](https://github.com/ruby/ruby/blob/trunk/lib/resolv.rb#L344) you can do so like this:
+If you need to increase the timeout above the [default](https://github.com/ruby/ruby/blob/trunk/lib/resolv.rb#L344) you can do so like this:
 
 ```yaml
 nameserver:
@@ -111,6 +114,16 @@ timeouts: 3
 ```
 
 The full list of configuration options can be found on the [Resolv docs](http://www.ruby-doc.org/stdlib-1.9.3/libdoc/resolv/rdoc/index.html).
+
+### Configuring DNS connection timeout
+
+DNS connection timeout is to stop waiting for resolver.
+If you want to wait over default timeout `1`,
+you can change the timeout in spec files or spec_helpers like this:
+
+```ruby
+RSpec.configuration.rspec_dns_connection_timeout = 5
+```
 
 Contributing
 ------------
