@@ -115,9 +115,9 @@ timeouts: 3
 
 The full list of configuration options can be found on the [Resolv docs](http://www.ruby-doc.org/stdlib-1.9.3/libdoc/resolv/rdoc/index.html).
 
-### Configuring DNS connection timeout
+### Configuring connection timeout
 
-DNS connection timeout is to stop waiting for resolver.
+Connection timeout is to stop waiting for resolver.
 If you want to wait over default timeout `1`,
 you can change the timeout in spec files or spec_helpers like this:
 
