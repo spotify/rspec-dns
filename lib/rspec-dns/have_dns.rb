@@ -99,7 +99,8 @@ RSpec::Matchers.define :have_dns do
 
   def _records
     @_records ||= begin
-      Timeout::timeout(1) {
+      connection_timeout = RSpec.configuration.rspec_dns_connection_timeout
+      Timeout::timeout(connection_timeout) {
         if _config.nil?
           Resolv::DNS.new.getresources(@dns, Resolv::DNS::Resource::IN::ANY)
         else
