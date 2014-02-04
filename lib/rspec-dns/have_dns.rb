@@ -30,12 +30,19 @@ RSpec::Matchers.define :have_dns do
       matched
     end
     @number_matched = results.count
-    @number_matched >= (@at_least ? @at_least : 1)
+    fail_with('exceptions') if !@exceptions.empty?
+    if @refuse_request
+      @refuse_request_received
+    else
+      @number_matched >= (@at_least ? @at_least : 1)
+    end
   end
 
   failure_message_for_should do |actual|
     if !@exceptions.empty?
       "got #{@exceptions.size} exception(s): #{@exceptions.join(", ")}"
+    elsif @refuse_request
+      "expected #{actual} to have request refused"
     elsif @at_least
       "expected #{actual} to have: #{@at_least} records of #{_pretty_print_options}, but found #{@number_matched}. Other records were: #{_pretty_print_records}"
     else
@@ -57,6 +64,10 @@ RSpec::Matchers.define :have_dns do
 
   chain :at_least do |actual|
     @at_least = actual
+  end
+
+  chain :refuse_request do
+    @refuse_request = true
   end
 
   def method_missing(m, *args, &block)
@@ -113,8 +124,14 @@ RSpec::Matchers.define :have_dns do
           Dnsruby::Resolver.new(_config).query(@dns, Dnsruby::Types.ANY)
         end
       }
-    rescue Timeout::Error
-      $stderr.puts "Connection timed out for #{@dns}"
+    rescue Exception => e
+      if Dnsruby::NXDomain === e
+        @exceptions << "Have not received any records"
+      elsif Dnsruby::Refused === e && @refuse_request
+        @refuse_request_received = true
+      else
+        @exceptions << e.message
+      end
       Dnsruby::Message.new
     end
   end
