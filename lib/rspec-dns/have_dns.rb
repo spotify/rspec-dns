@@ -29,7 +29,9 @@ RSpec::Matchers.define :have_dns do
       end
       matched
     end
+
     @number_matched = results.count
+
     fail_with('exceptions') if !@exceptions.empty?
     if @refuse_request
       @refuse_request_received
@@ -40,7 +42,7 @@ RSpec::Matchers.define :have_dns do
 
   failure_message_for_should do |actual|
     if !@exceptions.empty?
-      "got #{@exceptions.size} exception(s): #{@exceptions.join(", ")}"
+      "got #{@exceptions.size} exception(s):\n#{@exceptions.join("\n")}"
     elsif @refuse_request
       "expected #{actual} to have request refused"
     elsif @at_least
@@ -51,7 +53,13 @@ RSpec::Matchers.define :have_dns do
   end
 
   failure_message_for_should_not do |actual|
-    "expected #{actual} not to have #{_pretty_print_options}, but it did"
+    if !@exceptions.empty?
+      "got #{@exceptions.size} exception(s):\n#{@exceptions.join("\n")}"
+    elsif @refuse_request
+      "expected #{actual} not to be refused"
+    else
+      "expected #{actual} not to have #{_pretty_print_options}, but it did. the records were: #{_pretty_print_records}"
+    end
   end
 
   def description
@@ -111,19 +119,15 @@ RSpec::Matchers.define :have_dns do
     @_options ||= {}
   end
 
-  def _pretty_print_options
-    "\n  (#{_options.sort.collect{ |k,v| "#{k}:#{v.inspect}" }.join(', ')})\n"
-  end
-
   def _records
     @_records ||= begin
-      Timeout::timeout(10) {
-        if _config.nil?
-          Dnsruby::Resolver.new.query(@dns, Dnsruby::Types.ANY)
-        else
-          Dnsruby::Resolver.new(_config).query(@dns, Dnsruby::Types.ANY)
-        end
-      }
+      Timeout::timeout(10) do
+        config = _config || {}
+        resolver =  Dnsruby::Resolver.new(config)
+        # Backwards compatible config option from the version which uses ruby stdlib
+        resolver.query_timeout = config[:timeouts] if config[:timeouts]
+        resolver.query(@dns, Dnsruby::Types.ANY)
+      end
     rescue Exception => e
       if Dnsruby::NXDomain === e
         @exceptions << "Have not received any records"
@@ -136,13 +140,12 @@ RSpec::Matchers.define :have_dns do
     end
   end
 
-  def _pretty_print_records
-    "\n" + @records.collect { |record| _pretty_print_record(record) }.join("\n")
+  def _pretty_print_options
+    "\n  (#{_options.sort.collect{ |k,v| "#{k}:#{v.inspect}" }.join(', ')})\n"
   end
 
-  def _pretty_print_record(record)
-    '  (' + %w(address bitmap cpu data emailbx exchange expire minimum mname name os port preference priority protocol refresh retry rmailbx rname serial target ttl type weight).collect do |method|
-      "#{method}:#{record.send(method.to_sym).to_s.inspect}" if record.respond_to?(method.to_sym)
-    end.compact.join(', ') + ')'
+  def _pretty_print_records
+    "\n" + @records.collect{ |r| r.to_s }.join("\n")
   end
+
 end

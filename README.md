@@ -1,6 +1,6 @@
 rspec-dns
 =========
-RSpec DNS is an rspec plugin for easy DNS testing. It uses the built-in Ruby 1.9 library Resolv and is customizable.
+RSpec DNS is an rspec plugin for easy DNS testing. It uses dnsruby and is customizable.
 
 Installation
 ------------
@@ -42,13 +42,38 @@ Or group all your DNS tests into a single file or context:
 require 'spec_helper'
 
 describe 'DNS tests' do
-  'www.example.com'.should have_dns.with_type('TXT').and_ttl(300).and_data('a=b')
-  'www.example.com'.should have_dns.with_type('A').and_ttl(300).and_value('1.2.3.4')
+  it 'passes some tests' do
+    'www.example.com'.should have_dns.with_type('TXT').and_ttl(300).and_data('a=b')
+    'www.example.com'.should have_dns.with_type('A').and_ttl(300).and_address('1.2.3.4')
+  end
 end
 ```
 
 ### Chain Methods
-All of the method chains are actually [Resolv](http://www.ruby-doc.org/stdlib-1.9.3/libdoc/resolv/rdoc/index.html) attributes on the record. You can prefix them with `and_`, `with_`, `and_with` or whatever your heart desires. The predicate is what is checked. The rest is syntactic sugar.
+
+Currently the following chaining methods are supported:
+
+- at\_least
+- in\_authority
+- refuse\_request
+
+Here's some usage examples:
+
+```ruby
+  it 'checks if recursion is disabled' do
+    'google.com'.should have_dns.refuse_request
+  end
+
+  it 'checks if gslb subdomain is delegated to dynect' do
+    'gslb.example.com'.should have_dns.in_authority.with_type('NS').and_name(/dynect/).at_least(3)
+  end
+
+  it 'checks number of hosts in round robin' do
+    'example.com'.should have_dns.with_type('A').at_least(3)
+  end
+```
+
+The other method chains are actually [Dnsruby](http://dnsruby.rubyforge.org/classes/Dnsruby/RR.html) attributes on the record. You can prefix them with `and_`, `with_`, `and_with` or whatever your heart desires. The predicate is what is checked. The rest is syntactic sugar.
 
 Depending on the type of record, the following attributes may be available:
 
@@ -56,6 +81,7 @@ Depending on the type of record, the following attributes may be available:
 - bitmap
 - cpu
 - data
+- domainname
 - emailbx
 - exchange
 - expire
@@ -81,8 +107,7 @@ If you try checking an attribute on a record that is non-existent (like checking
 
 ```text
 Failure/Error: it { should have_dns.with_type('TXT').and_ftl(300).and_data('a=b') }
-     NoMethodError:
-       undefined method `rmailbx' for #<Resolv::DNS::Resource::IN::A:0x007fb56302ed90>
+  got 1 exception(s): undefined method `rmailbx' for #<Dnsruby::RR::IN::A:0x007f66a0339b00>
 ```
 
 For this reason, you should always check the `type` attribute first in your chain.
@@ -101,7 +126,7 @@ nameserver:
 
 If this file is missing Resolv will use the settings in /etc/resolv.conf.
 
-If you need to incrase the timeout above the [default](https://github.com/ruby/ruby/blob/trunk/lib/resolv.rb#L344) you can do so like this:
+If you need to change the [timeout](http://dnsruby.rubyforge.org/classes/Dnsruby/Resolver.html) you can do so like this:
 
 ```yaml
 nameserver:
@@ -110,7 +135,7 @@ nameserver:
 timeouts: 3
 ```
 
-The full list of configuration options can be found on the [Resolv docs](http://www.ruby-doc.org/stdlib-1.9.3/libdoc/resolv/rdoc/index.html).
+The full list of configuration options can be found on the [Dnsruby docs](http://dnsruby.rubyforge.org/classes/Dnsruby/Config.html).
 
 Contributing
 ------------
@@ -120,7 +145,9 @@ Contributing
 
 License & Authors
 -----------------
-- Author: Seth Vargo (sethvargo@gmail.com)
+- Seth Vargo (sethvargo@gmail.com)
+- Johannes Russek (jrussek@spotify.com)
+- Alexey Lapitsky (lex@realisticgroup.com)
 
 ```text
 Copyright 2012-2013 Seth Vargo
