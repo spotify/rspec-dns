@@ -1,20 +1,22 @@
-require 'resolv'
-
 RSpec.configure do |c|
-  c.add_setting :rspec_dns_connection_timeout ,:default => 1
+  c.add_setting :rspec_dns_connection_timeout, :default => 1
 end
 
 RSpec::Matchers.define :have_dns do
   match do |dns|
     @dns = dns
-    @number_matched = 0
+    @exceptions = []
 
-    _records.each do |record|
+    if @authority
+      @records = _records.authority
+    else
+      @records = _records.answer
+    end
+
+    results = @records.find_all do |record|
       matched = _options.all? do |option, value|
-        # To distinguish types because not all Resolv returns have type
-        if option == :type
-          record.class.name.split('::').last == value.to_s
-        else
+        begin
+          # To distinguish types because not all Resolv returns have type
           if value.is_a? String
             record.send(option).to_s == value
           elsif value.is_a? Regexp
@@ -22,26 +24,30 @@ RSpec::Matchers.define :have_dns do
           else
             record.send(option) == value
           end
+        rescue Exception => e
+          @exceptions << e.message
+          false
         end
       end
-      @number_matched += 1 if matched
       matched
     end
 
-    if @at_least
-      @number_matched >= @at_least
+    @number_matched = results.count
+
+    fail_with('exceptions') if !@exceptions.empty?
+    if @refuse_request
+      @refuse_request_received
     else
-      @number_matched > 0
+      @number_matched >= (@at_least ? @at_least : 1)
     end
-
-  end
-
-  chain :at_least do |min_count|
-    @at_least = min_count
   end
 
   failure_message_for_should do |actual|
-    if @at_least
+    if !@exceptions.empty?
+      "tried to look up #{actual} but got #{@exceptions.size} exception(s): #{@exceptions.join(", ")}"
+    elsif @refuse_request
+      "expected #{actual} to have request refused"
+    elsif @at_least
       "expected #{actual} to have: #{@at_least} records of #{_pretty_print_options}, but found #{@number_matched}. Other records were: #{_pretty_print_records}"
     else
       "expected #{actual} to have: #{_pretty_print_options}, but did not. other records were: #{_pretty_print_records}"
@@ -49,11 +55,29 @@ RSpec::Matchers.define :have_dns do
   end
 
   failure_message_for_should_not do |actual|
-    "expected #{actual} not to have #{_pretty_print_options}, but it did"
+    if !@exceptions.empty?
+      "got #{@exceptions.size} exception(s):\n#{@exceptions.join("\n")}"
+    elsif @refuse_request
+      "expected #{actual} not to be refused"
+    else
+      "expected #{actual} not to have #{_pretty_print_options}, but it did. the records were: #{_pretty_print_records}"
+    end
   end
 
-  description do
+  def description
     "have the correct dns entries with #{_options}"
+  end
+
+  chain :in_authority do
+    @authority = true
+  end
+
+  chain :at_least do |actual|
+    @at_least = actual
+  end
+
+  chain :refuse_request do
+    @refuse_request = true
   end
 
   def method_missing(m, *args, &block)
@@ -68,7 +92,7 @@ RSpec::Matchers.define :have_dns do
   def _config
     @config ||= if File.exists?(_config_file)
       require 'yaml'
-      config = _symbolize_keys(YAML::load(ERB.new(File.read(_config_file) ).result))
+      _symbolize_keys(YAML::load(ERB.new(File.read(_config_file) ).result))
     else
       nil
     end
@@ -97,33 +121,34 @@ RSpec::Matchers.define :have_dns do
     @_options ||= {}
   end
 
-  def _pretty_print_options
-    "\n  (#{_options.sort.collect{ |k,v| "#{k}:#{v.inspect}" }.join(', ')})\n"
-  end
-
   def _records
     @_records ||= begin
-      connection_timeout = RSpec.configuration.rspec_dns_connection_timeout
-      Timeout::timeout(connection_timeout) {
-        if _config.nil?
-          Resolv::DNS.new.getresources(@dns, Resolv::DNS::Resource::IN::ANY)
-        else
-          Resolv::DNS.new(_config).getresources(@dns, Resolv::DNS::Resource::IN::ANY)
-        end
-      }
-    rescue Timeout::Error
-      $stderr.puts "Connection timed out for #{@dns}"
-      []
+      config = _config || {}
+      # Backwards compatible config option for rspec-dnsruby
+      query_timeout = config[:timeouts] || RSpec.configuration.rspec_dns_connection_timeout
+      Timeout::timeout(query_timeout + 0.2) do
+        resolver =  Dnsruby::Resolver.new(config)
+        resolver.query_timeout = query_timeout
+        resolver.query(@dns, Dnsruby::Types.ANY)
+      end
+    rescue Exception => e
+      if Dnsruby::NXDomain === e
+        @exceptions << "Have not received any records"
+      elsif Dnsruby::Refused === e && @refuse_request
+        @refuse_request_received = true
+      else
+        @exceptions << e.message
+      end
+      Dnsruby::Message.new
     end
   end
 
-  def _pretty_print_records
-    "\n" + _records.collect { |record| _pretty_print_record(record) }.join("\n")
+  def _pretty_print_options
+    "\n  (#{_options.sort.map { |k, v| "#{k}:#{v.inspect}" }.join(', ')})\n"
   end
 
-  def _pretty_print_record(record)
-    '  (' + %w(address bitmap cpu data emailbx exchange expire minimum mname name os port preference priority protocol refresh retry rmailbx rname serial target ttl type weight).collect do |method|
-      "#{method}:#{record.send(method.to_sym).to_s.inspect}" if record.respond_to?(method.to_sym)
-    end.compact.join(', ') + ')'
+  def _pretty_print_records
+    "\n" + @records.map { |r| r.to_s }.join("\n")
   end
+
 end
