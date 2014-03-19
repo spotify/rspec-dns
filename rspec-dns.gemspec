@@ -15,5 +15,5 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'rake'
   s.add_dependency 'rspec', '>= 2.9'
-  s.add_dependency 'dnsruby'
+  s.add_dependency 'dnsruby', '~> 1.54'
 end
