@@ -1,7 +1,4 @@
 require 'spec_helper'
-require 'dnsruby'
-require 'resolv'
-require_relative '../../lib/rspec-dns'
 
 def stub_records(strings)
   records = strings.map { |s| Dnsruby::RR.new_from_string(s) }
