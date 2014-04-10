@@ -19,7 +19,7 @@ describe 'rspec-dns matchers' do
 
         'example.com'.should have_dns.with_type('A')
         'example.com'.should_not have_dns.with_type('TXT')
-        'example.com'.should have_dns.with_type('A').and_address(Resolv::IPv4.create('192.168.100.100'))
+        'example.com'.should have_dns.with_type('A').and_address('192.168.100.100')
       end
 
       it 'can evalutate a AAAA record' do
@@ -28,7 +28,7 @@ describe 'rspec-dns matchers' do
         'example.com'.should have_dns.with_type('AAAA')
         'example.com'.should_not have_dns.with_type('A')
         'example.com'.should have_dns.with_type('AAAA')
-          .and_address(Resolv::IPv6.create('2001:0002:6c::430'))
+          .and_address('2001:2:6C::430')
       end
 
       it 'can evalutate a CNAME record' do
