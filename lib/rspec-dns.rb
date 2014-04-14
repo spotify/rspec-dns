@@ -1,5 +1,5 @@
 require 'erb'
-require 'resolv'
+require 'dnsruby'
 require 'rspec/expectations'
 
 require 'rspec-dns/have_dns'
