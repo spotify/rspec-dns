@@ -35,7 +35,7 @@ Then, create a spec like this:
 require 'spec_helper'
 
 describe 'www.example.com' do
-  it { should have_dns.with_type('TXT').and_ttl(300).and_data('a=b') }
+  it { is_expected.to have_dns.with_type('TXT').and_ttl(300).and_data('a=b') }
 end
 ```
 
@@ -46,8 +46,8 @@ require 'spec_helper'
 
 describe 'DNS tests' do
   it 'passes some tests' do
-    'www.example.com'.should have_dns.with_type('TXT').and_ttl(300).and_data('a=b')
-    'www.example.com'.should have_dns.with_type('A').and_ttl(300).and_address('1.2.3.4')
+    expect('www.example.com').to have_dns.with_type('TXT').and_ttl(300).and_data('a=b')
+    expect('www.example.com').to have_dns.with_type('A').and_ttl(300).and_address('1.2.3.4')
   end
 end
 ```
@@ -64,15 +64,15 @@ Here's some usage examples:
 
 ```ruby
   it 'checks if recursion is disabled' do
-    'google.com'.should have_dns.refuse_request
+    expect('google.com').to have_dns.refuse_request
   end
 
   it 'checks if gslb subdomain is delegated to dynect' do
-    'gslb.example.com'.should have_dns.in_authority.with_type('NS').and_name(/dynect/).at_least(3)
+    expect('gslb.example.com').to have_dns.in_authority.with_type('NS').and_name(/dynect/).at_least(3)
   end
 
   it 'checks number of hosts in round robin' do
-    'example.com'.should have_dns.with_type('A').at_least(3)
+    expect('example.com').to have_dns.with_type('A').at_least(3)
   end
 ```
 
@@ -109,7 +109,7 @@ Depending on the type of record, the following attributes may be available:
 If you try checking an attribute on a record that is non-existent (like checking the `rmailbx` on an `A` record), you'll get an error like this:
 
 ```text
-Failure/Error: it { should have_dns.with_type('TXT').and_ftl(300).and_data('a=b') }
+Failure/Error: it { is_expected.to have_dns.with_type('TXT').and_ftl(300).and_data('a=b') }
   got 1 exception(s): undefined method `rmailbx' for #<Dnsruby::RR::IN::A:0x007f66a0339b00>
 ```
 
