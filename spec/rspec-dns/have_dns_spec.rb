@@ -15,20 +15,20 @@ describe 'rspec-dns matchers' do
   describe '#have_dns' do
     context 'with a sigle record' do
       it 'can evalutate an A record' do
-        stub_records(['example.com 86400 A 192.168.100.100'])
+        stub_records(['example.com 86400 A 192.0.2.4'])
 
         expect('example.com').to have_dns.with_type('A')
         expect('example.com').to_not have_dns.with_type('TXT')
-        expect('example.com').to have_dns.with_type('A').and_address('192.168.100.100')
+        expect('example.com').to have_dns.with_type('A').and_address('192.0.2.4')
       end
 
       it 'can evalutate a AAAA record' do
-        stub_records(['example.com 86400 AAAA 2001:0002:6c::430'])
+        stub_records(['example.com 86400 AAAA 2001:DB8:6c::430'])
 
         expect('example.com').to have_dns.with_type('AAAA')
         expect('example.com').to_not have_dns.with_type('A')
         expect('example.com').to have_dns.with_type('AAAA')
-          .and_address('2001:2:6C::430')
+          .and_address('2001:DB8:6C::430')
       end
 
       it 'can evalutate a CNAME record' do
