@@ -161,11 +161,13 @@ License & Authors
 - Seth Vargo (sethvargo@gmail.com)
 - Johannes Russek (jrussek@spotify.com)
 - Alexey Lapitsky (lex@realisticgroup.com)
+- Hiroshi OTA (otahi.pub@gmail.com)
 
 ```text
 Copyright 2012-2013 Seth Vargo
 Copyright 2012-2013 CustomInk, LLC
 Copyright 2013-2014 Spotify AB
+Copyright 2013-2014 Hiroshi OTA
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
