@@ -98,6 +98,15 @@ describe 'rspec-dns matchers' do
       end
     end
 
+    context 'with config chain' do
+      it 'should accept config chain' do
+        stub_records(['example.com 86400 A 192.0.2.1']) do
+        end
+        expect('example.com').to have_dns.with_type('A')
+          .config(nameserver: '192.0.2.4')
+      end
+    end
+
     context 'with changable connection timeout' do
       it 'is_expected.to timeout within 3 seconds in default' do
         stub_records(['example.com 86400 A 192.168.100.100']) do
