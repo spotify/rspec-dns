@@ -129,7 +129,11 @@ RSpec::Matchers.define :have_dns do
       Timeout::timeout(query_timeout + 0.2) do
         resolver =  Dnsruby::Resolver.new(config)
         resolver.query_timeout = query_timeout
-        resolver.query(@dns, Dnsruby::Types.ANY)
+        if (IPAddr.new(@dns) rescue nil) # Check if IPAddr(v4,v6)
+          resolver.query(@dns, Dnsruby::Types.PTR)
+        else
+          resolver.query(@dns, Dnsruby::Types.ANY)
+        end
       end
     rescue Exception => e
       if Dnsruby::NXDomain === e

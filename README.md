@@ -47,7 +47,8 @@ require 'spec_helper'
 describe 'DNS tests' do
   it 'passes some tests' do
     expect('www.example.com').to have_dns.with_type('TXT').and_ttl(300).and_data('a=b')
-    expect('www.example.com').to have_dns.with_type('A').and_ttl(300).and_address('1.2.3.4')
+    expect('www.example.com').to have_dns.with_type('A').and_ttl(300).and_address('192.0.2.4')
+    expect('192.0.2.4').to have_dns.with_type('PTR').and_domainname('www.example.com')
   end
 end
 ```
