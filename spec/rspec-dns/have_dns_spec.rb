@@ -100,8 +100,7 @@ describe 'rspec-dns matchers' do
 
     context 'with config chain' do
       it 'should accept config chain' do
-        stub_records(['example.com 86400 A 192.0.2.1']) do
-        end
+        stub_records(['example.com 86400 A 192.0.2.1'])
         expect('example.com').to have_dns.with_type('A')
           .config(nameserver: '192.0.2.4')
       end
