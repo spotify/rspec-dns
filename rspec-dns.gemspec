@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
-  s.version       = '0.1.2'
+  s.version       = '0.1.3'
   s.name          = 'rspec-dns'
-  s.authors       = ['Seth Vargo', 'Alexey Lapitsky', 'Johannes Russek']
+  s.authors       = ['Seth Vargo', 'Alexey Lapitsky', 'Johannes Russek', 'Hiroshi OTA']
   s.email         = 'alexey@spotify.com'
   s.description   = 'Easily test your DNS entries with RSpec'
   s.summary       = 'rspec-dns provides an easy-to-use DSL for testing your DNS records are responding as they should.'
