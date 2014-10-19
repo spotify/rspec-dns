@@ -60,6 +60,7 @@ Currently the following chaining methods are supported:
 - at\_least
 - in\_authority
 - refuse\_request
+- config
 
 Here's some usage examples:
 
@@ -74,6 +75,10 @@ Here's some usage examples:
 
   it 'checks number of hosts in round robin' do
     expect('example.com').to have_dns.with_type('A').at_least(3)
+  end
+
+  it 'check with configuration' do
+    expect('example.com').to have_dns.with_type('A').config(nameserver: '192.0.2.4')
   end
 ```
 
@@ -118,7 +123,7 @@ For this reason, you should always check the `type` attribute first in your chai
 
 Configuring
 -----------
-All configurations must be in your project root at `config/dns.yml`. This YAML file directly corresponds to the Resolv DNS initializer.
+All configurations can be in your project root at `config/dns.yml`. This YAML file directly corresponds to the Resolv DNS initializer.
 
 For example, to directly query your DNS servers (necessary for correct TTL tests), create a `config/dns.yml` file like this:
 
@@ -129,8 +134,9 @@ nameserver:
 ```
 
 If this file is missing Resolv will use the settings in /etc/resolv.conf.
+You can also configure with `config` chain.
 
-The full list of configuration options can be found on the [Dnsruby docs](http://dnsruby.rubyforge.org/classes/Dnsruby/Config.html).
+The full list of configuration options can be found on the [Dnsruby docs](http://www.ruby-doc.org/gems/docs/d/Dnsruby-1.0/Dnsruby/Config.html).
 
 ### Configuring connection timeout
 
@@ -162,11 +168,13 @@ License & Authors
 - Seth Vargo (sethvargo@gmail.com)
 - Johannes Russek (jrussek@spotify.com)
 - Alexey Lapitsky (lex@realisticgroup.com)
+- Hiroshi OTA (otahi.pub@gmail.com)
 
 ```text
 Copyright 2012-2013 Seth Vargo
 Copyright 2012-2013 CustomInk, LLC
 Copyright 2013-2014 Spotify AB
+Copyright 2013-2014 Hiroshi OTA
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

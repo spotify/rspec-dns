@@ -80,6 +80,10 @@ RSpec::Matchers.define :have_dns do
     @refuse_request = true
   end
 
+  chain :config do |c|
+    @config = c
+  end
+
   def method_missing(m, *args, &block)
     if m.to_s =~ /(and\_with|and|with)?\_(.*)$/
       _options[$2.to_sym] = args.first
