@@ -17,7 +17,9 @@ RSpec::Matchers.define :have_dns do
       matched = _options.all? do |option, value|
         begin
           # To distinguish types because not all Resolv returns have type
-          if value.is_a? String
+          if ipaddr = (IPAddr.new(value) rescue nil) # IPAddr(v4/v6)?
+            ipaddr.include?(record.send(option).to_s)
+          elsif value.is_a? String
             record.send(option).to_s == value
           elsif value.is_a? Regexp
             record.send(option).to_s =~ value
