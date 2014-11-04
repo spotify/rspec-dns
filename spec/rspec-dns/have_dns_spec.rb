@@ -31,6 +31,16 @@ describe 'rspec-dns matchers' do
           .and_address('2001:DB8:6C::430')
       end
 
+      it 'can evalutate an A/AAAA record with IPAddr range' do
+        stub_records(['example.com 86400 A 192.0.2.4',
+                      'example.com 86400 AAAA 2001:DB8:6c::430'])
+
+        expect('example.com').to have_dns.with_type('A')
+          .and_address('192.0.2.0/24')
+        expect('example.com').to have_dns.with_type('AAAA')
+          .and_address('2001:DB8:6C::/64')
+      end
+
       it 'can evalutate a CNAME record' do
         stub_records(['www.example.com 300 IN CNAME example.com'])
 
