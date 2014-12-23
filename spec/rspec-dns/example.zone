@@ -1,0 +1,14 @@
+$TTL 86400
+
+@ IN SOA  ns.example.com.  root.example.com. (
+          2014122413  ; Serial
+          3600        ; Refresh
+          900         ; Retry
+          604800      ; Expire
+          900         ; Minimum
+          )
+          IN NS        ns
+          IN MX   40   mail
+          IN A         192.0.2.4
+www       IN A         192.0.2.4
+www       IN AAAA      2001:DB8:6C::430
