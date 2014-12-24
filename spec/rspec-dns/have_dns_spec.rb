@@ -117,7 +117,7 @@ describe 'rspec-dns matchers' do
     end
 
     context 'with zone file' do
-      it 'can evalutate an A record from zone file with origin' do
+      it 'can evalutate records in zone file with origin' do
         file = 'spec/rspec-dns/example.zone'
         origin =  'example.com.'
 
@@ -137,7 +137,7 @@ describe 'rspec-dns matchers' do
           .and_address('2001:DB8:6C::430')
           .in_zone_file(file, origin)
       end
-      it 'can evalutate an A record from zone file without origin' do
+      it 'can evalutate records in zone file without origin' do
         file = 'spec/rspec-dns/example.zone'
 
         expect('.').to have_dns.with_type('NS')
@@ -145,7 +145,7 @@ describe 'rspec-dns matchers' do
         expect('www').to have_dns.with_type('A')
           .and_address('192.0.2.4').in_zone_file(file)
       end
-      it 'can evalutate an A record with dns servers if file is nil' do
+      it 'can evalutate records with dns servers if file is nil' do
         file = nil
         stub_records(['example.com 86400 A 192.0.2.4'])
         expect('example.com').to have_dns.with_type('A')
