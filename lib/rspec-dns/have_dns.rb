@@ -86,7 +86,7 @@ RSpec::Matchers.define :have_dns do
     @config = c
   end
 
-  chain :zone_file do |file = nil, origin = '.'|
+  chain :in_zone_file do |file = nil, origin = '.'|
     @zone_file = file
     @zone_origin = origin
   end

@@ -61,7 +61,7 @@ Currently the following chaining methods are supported:
 - in\_authority
 - refuse\_request
 - config
-- zone\_file
+- in\_zone\_file
 
 Here's some usage examples:
 
@@ -83,7 +83,7 @@ Here's some usage examples:
   end
 
   it 'checks zone file("example.zone") with specified origin("example.com.")' do
-    expect('example.com').to have_dns.with_type('A').zone_file('example.zone', 'example.com.')
+    expect('example.com').to have_dns.with_type('A').in_zone_file('example.zone', 'example.com.')
   end
 ```
 

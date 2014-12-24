@@ -123,37 +123,37 @@ describe 'rspec-dns matchers' do
 
         expect('example.com').to have_dns.with_type('NS')
           .and_domainname('ns.example.com')
-          .zone_file(file, origin)
+          .in_zone_file(file, origin)
         expect('example.com').to have_dns.with_type('A')
           .and_address('192.0.2.4')
-          .zone_file(file, origin)
+          .in_zone_file(file, origin)
         expect('example.com').to have_dns.with_type('MX')
           .and_preference(40).and_exchange('mail.example.com')
-          .zone_file(file, origin)
+          .in_zone_file(file, origin)
         expect('www.example.com').to have_dns.with_type('A')
           .and_address('192.0.2.4')
-          .zone_file(file, origin)
+          .in_zone_file(file, origin)
         expect('www.example.com').to have_dns.with_type('AAAA')
           .and_address('2001:DB8:6C::430')
-          .zone_file(file, origin)
+          .in_zone_file(file, origin)
       end
       it 'can evalutate an A record from zone file without origin' do
         file = 'spec/rspec-dns/example.zone'
 
         expect('.').to have_dns.with_type('NS')
-          .and_domainname('ns').zone_file(file)
+          .and_domainname('ns').in_zone_file(file)
         expect('www').to have_dns.with_type('A')
-          .and_address('192.0.2.4').zone_file(file)
+          .and_address('192.0.2.4').in_zone_file(file)
       end
       it 'can evalutate an A record with dns servers if file is nil' do
         file = nil
         stub_records(['example.com 86400 A 192.0.2.4'])
         expect('example.com').to have_dns.with_type('A')
           .and_address('192.0.2.4')
-          .zone_file(file)
+          .in_zone_file(file)
         expect('example.com').to have_dns.with_type('A')
           .and_address('192.0.2.4')
-          .zone_file
+          .in_zone_file
       end
     end
 
