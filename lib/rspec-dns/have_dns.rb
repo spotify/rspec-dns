@@ -86,6 +86,11 @@ RSpec::Matchers.define :have_dns do
     @config = c
   end
 
+  chain :in_zone_file do |file = nil, origin = '.'|
+    @zone_file = file
+    @zone_origin = origin
+  end
+
   def method_missing(m, *args, &block)
     if m.to_s =~ /(and\_with|and|with)?\_(.*)$/
       _options[$2.to_sym] = args.first
@@ -128,6 +133,12 @@ RSpec::Matchers.define :have_dns do
   end
 
   def _records
+    if @zone_file
+      @_records = Dnsruby::Message.new
+      rrs = Dnsruby::ZoneReader.new(@zone_origin).process_file(@zone_file)
+      rrs.each { |rr| @_records.add_answer(rr) }
+    end
+
     @_records ||= begin
       config = _config || {}
       # Backwards compatible config option for rspec-dnsruby
