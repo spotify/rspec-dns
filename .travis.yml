@@ -5,3 +5,7 @@ script: "rake travis"
 rvm:
   - 1.9.3
   - 2.0.0
+
+addons:
+  code_climate:
+    repo_token: 2feb9f7ee6d879b72c3b33fd897a801d7aa0eadcc72898242b5a2dff2435b937
