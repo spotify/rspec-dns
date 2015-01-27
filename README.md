@@ -1,7 +1,9 @@
 rspec-dns
 =========
 
+[![Gem Version](https://badge.fury.io/rb/rspec-dns.svg)](http://badge.fury.io/rb/rspec-dns)
 [![Build Status](https://travis-ci.org/spotify/rspec-dns.png?branch=master)](https://travis-ci.org/spotify/rspec-dns)
+[![Dependency Status](https://gemnasium.com/spotify/rspec-dns.png)](https://gemnasium.com/spotify/rspec-dns)
 
 rspec-dns is an rspec plugin for easy DNS testing. It uses dnsruby instead of the standard library for the name resolution.
 
