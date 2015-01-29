@@ -89,7 +89,7 @@ Here's some usage examples:
   end
 ```
 
-The other method chains are actually [Dnsruby](http://dnsruby.rubyforge.org/classes/Dnsruby/RR.html) attributes on the record. You can prefix them with `and_`, `with_`, `and_with` or whatever your heart desires. The predicate is what is checked. The rest is syntactic sugar.
+The other method chains are actually [Dnsruby](http://www.rubydoc.info/gems/dnsruby/Dnsruby/RR) attributes on the record. You can prefix them with `and_`, `with_`, `and_with` or whatever your heart desires. The predicate is what is checked. The rest is syntactic sugar.
 
 Depending on the type of record, the following attributes may be available:
 
@@ -143,7 +143,7 @@ nameserver:
 If this file is missing Resolv will use the settings in /etc/resolv.conf.
 You can also configure with `config` chain.
 
-The full list of configuration options can be found on the [Dnsruby docs](http://www.ruby-doc.org/gems/docs/d/Dnsruby-1.0/Dnsruby/Config.html).
+The full list of configuration options can be found on the [Dnsruby docs](http://www.rubydoc.info/gems/dnsruby/Dnsruby/Config).
 
 ### Configuring connection timeout
 
