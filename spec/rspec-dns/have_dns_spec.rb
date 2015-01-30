@@ -133,6 +133,9 @@ describe 'rspec-dns matchers' do
         expect('www.example.com').to have_dns.with_type('A')
           .and_address('192.0.2.4')
           .in_zone_file(file, origin)
+        expect('doubt.example.com').not_to have_dns.with_type('A')
+          .and_address('192.0.2.4')
+          .in_zone_file(file, origin)
         expect('www.example.com').to have_dns.with_type('AAAA')
           .and_address('2001:DB8:6C::430')
           .in_zone_file(file, origin)
@@ -143,6 +146,8 @@ describe 'rspec-dns matchers' do
         expect('').to have_dns.with_type('NS')
           .and_domainname('ns').in_zone_file(file)
         expect('www').to have_dns.with_type('A')
+          .and_address('192.0.2.4').in_zone_file(file)
+        expect('doubt').not_to have_dns.with_type('A')
           .and_address('192.0.2.4').in_zone_file(file)
       end
       it 'can evalutate records with dns servers if file is nil' do
