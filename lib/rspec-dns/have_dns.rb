@@ -136,7 +136,7 @@ RSpec::Matchers.define :have_dns do
     if @zone_file
       @_records = Dnsruby::Message.new
       rrs = Dnsruby::ZoneReader.new(@zone_origin).process_file(@zone_file)
-      rrs.each { |rr| @_records.add_answer(rr) }
+      rrs.each { |rr| @_records.add_answer(rr) if @dns == rr.name.to_s  }
     end
 
     @_records ||= begin
