@@ -140,7 +140,7 @@ describe 'rspec-dns matchers' do
       it 'can evalutate records in zone file without origin' do
         file = 'spec/rspec-dns/example.zone'
 
-        expect('.').to have_dns.with_type('NS')
+        expect('').to have_dns.with_type('NS')
           .and_domainname('ns').in_zone_file(file)
         expect('www').to have_dns.with_type('A')
           .and_address('192.0.2.4').in_zone_file(file)
