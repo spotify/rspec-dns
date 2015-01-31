@@ -140,6 +140,23 @@ describe 'rspec-dns matchers' do
           .and_address('2001:DB8:6C::430')
           .in_zone_file(file, origin)
       end
+      context 'in reverse' do
+        it 'can evalutate PTR records in zone file' do
+          file = 'spec/rspec-dns/0.2.0.192.rev.zone'
+          origin =  '2.0.192.in-addr.arpa.'
+
+          expect('4.2.0.192.in-addr.arpa').to have_dns.with_type('PTR')
+            .and_domainname('www.example.com')
+            .in_zone_file(file, origin)
+          expect('5.2.0.192.in-addr.arpa').not_to have_dns.with_type('PTR')
+            .and_domainname('www.example.com')
+            .in_zone_file(file, origin)
+          expect('192.0.2.4').to have_dns.with_type('PTR')
+            .and_domainname('www.example.com')
+            .in_zone_file(file, origin)
+        end
+      end
+
       it 'can evalutate records in zone file without origin' do
         file = 'spec/rspec-dns/example.zone'
 
