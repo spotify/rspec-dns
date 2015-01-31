@@ -136,7 +136,13 @@ RSpec::Matchers.define :have_dns do
     if @zone_file
       @_records = Dnsruby::Message.new
       rrs = Dnsruby::ZoneReader.new(@zone_origin).process_file(@zone_file)
-      rrs.each { |rr| @_records.add_answer(rr) if @dns == rr.name.to_s  }
+      name = if (IPAddr.new(@dns) rescue nil) # Check if IPAddr(v4,v6)
+               IPAddr.new(@dns).reverse
+             else
+                @dns
+             end
+
+      rrs.each { |rr| @_records.add_answer(rr) if name == rr.name.to_s  }
     end
 
     @_records ||= begin
