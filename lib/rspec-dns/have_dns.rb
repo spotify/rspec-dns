@@ -133,16 +133,16 @@ RSpec::Matchers.define :have_dns do
   end
 
   def _records
+    @_name ||= if (IPAddr.new(@dns) rescue nil) # Check if IPAddr(v4,v6)
+                 IPAddr.new(@dns).reverse
+               else
+                 @dns
+               end
+
     if @zone_file
       @_records = Dnsruby::Message.new
       rrs = Dnsruby::ZoneReader.new(@zone_origin).process_file(@zone_file)
-      name = if (IPAddr.new(@dns) rescue nil) # Check if IPAddr(v4,v6)
-               IPAddr.new(@dns).reverse
-             else
-                @dns
-             end
-
-      rrs.each { |rr| @_records.add_answer(rr) if name == rr.name.to_s  }
+      rrs.each { |rr| @_records.add_answer(rr) if @_name == rr.name.to_s  }
     end
 
     @_records ||= begin
@@ -152,11 +152,7 @@ RSpec::Matchers.define :have_dns do
       Timeout::timeout(query_timeout + 0.2) do
         resolver =  Dnsruby::Resolver.new(config)
         resolver.query_timeout = query_timeout
-        if (IPAddr.new(@dns) rescue nil) # Check if IPAddr(v4,v6)
-          resolver.query(@dns, Dnsruby::Types.PTR)
-        else
-          resolver.query(@dns, Dnsruby::Types.ANY)
-        end
+        resolver.query(@_name, Dnsruby::Types.ANY)
       end
     rescue Exception => e
       if Dnsruby::NXDomain === e
