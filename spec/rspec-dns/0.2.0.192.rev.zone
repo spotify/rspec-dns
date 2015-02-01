@@ -1,0 +1,11 @@
+$TTL 86400
+
+@ IN SOA  ns.example.com.  root.example.com. (
+          2015020102  ; Serial
+          3600        ; Refresh
+          900         ; Retry
+          604800      ; Expire
+          900         ; Minimum
+          )
+          IN NS        ns.example.com.
+4         IN PTR       www.example.com.

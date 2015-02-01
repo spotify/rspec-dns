@@ -133,16 +133,38 @@ describe 'rspec-dns matchers' do
         expect('www.example.com').to have_dns.with_type('A')
           .and_address('192.0.2.4')
           .in_zone_file(file, origin)
+        expect('doubt.example.com').not_to have_dns.with_type('A')
+          .and_address('192.0.2.4')
+          .in_zone_file(file, origin)
         expect('www.example.com').to have_dns.with_type('AAAA')
           .and_address('2001:DB8:6C::430')
           .in_zone_file(file, origin)
       end
+      context 'in reverse' do
+        it 'can evalutate PTR records in zone file' do
+          file = 'spec/rspec-dns/0.2.0.192.rev.zone'
+          origin =  '2.0.192.in-addr.arpa.'
+
+          expect('4.2.0.192.in-addr.arpa').to have_dns.with_type('PTR')
+            .and_domainname('www.example.com')
+            .in_zone_file(file, origin)
+          expect('5.2.0.192.in-addr.arpa').not_to have_dns.with_type('PTR')
+            .and_domainname('www.example.com')
+            .in_zone_file(file, origin)
+          expect('192.0.2.4').to have_dns.with_type('PTR')
+            .and_domainname('www.example.com')
+            .in_zone_file(file, origin)
+        end
+      end
+
       it 'can evalutate records in zone file without origin' do
         file = 'spec/rspec-dns/example.zone'
 
-        expect('.').to have_dns.with_type('NS')
+        expect('').to have_dns.with_type('NS')
           .and_domainname('ns').in_zone_file(file)
         expect('www').to have_dns.with_type('A')
+          .and_address('192.0.2.4').in_zone_file(file)
+        expect('doubt').not_to have_dns.with_type('A')
           .and_address('192.0.2.4').in_zone_file(file)
       end
       it 'can evalutate records with dns servers if file is nil' do
