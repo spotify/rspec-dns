@@ -152,6 +152,7 @@ RSpec::Matchers.define :have_dns do
       Timeout::timeout(query_timeout + 0.2) do
         resolver =  Dnsruby::Resolver.new(config)
         resolver.query_timeout = query_timeout
+        resolver.do_caching = false
         resolver.query(@_name, Dnsruby::Types.ANY)
       end
     rescue Exception => e
