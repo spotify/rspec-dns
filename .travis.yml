@@ -1,13 +1,16 @@
 language: ruby
-
-script: "rake travis"
-
+script: rake travis
 rvm:
-  - 1.9.3
-  - 2.2.0
-  - jruby-19mode
-  - rbx-2
-
+- 1.9.3
+- 2.2.0
+- jruby-19mode
+- rbx-2
 addons:
   code_climate:
     repo_token: 2feb9f7ee6d879b72c3b33fd897a801d7aa0eadcc72898242b5a2dff2435b937
+deploy:
+  provider: rubygems
+  on:
+    tags: true
+  api_key:
+    secure: XFUKxH18R6lT5In7phyVsL3a5mcESrssD2dlNrQvC2TXeBGif+0sSSt7ZfRuFve5XB0Wa8ruClFxRr0uMXRqUZUKc1/VbLM2DnLLkruK8pwdu2oQI3JMdcDtMmVsVxvJViAAy3ibuKuCTF2NbU+Yg/VrwMNU+aN63zsDR44t1IU=
