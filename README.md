@@ -73,7 +73,7 @@ Here's some usage examples:
   end
 
   it 'checks if gslb subdomain is delegated to dynect' do
-    expect('gslb.example.com').to have_dns.in_authority.with_type('NS').and_name(/dynect/).at_least(3)
+    expect('gslb.example.com').to have_dns.in_authority.with_type('NS').and_domainname(/dynect/).at_least(3)
   end
 
   it 'checks number of hosts in round robin' do
