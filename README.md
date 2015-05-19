@@ -143,7 +143,15 @@ nameserver:
 If this file is missing Resolv will use the settings in /etc/resolv.conf.
 You can also configure with `config` chain.
 
-The full list of configuration options can be found on the [Dnsruby docs](http://www.rubydoc.info/gems/dnsruby/Dnsruby/Config).
+```ruby
+  it 'checks with configuration' do
+    expect('example.com').to have_dns
+      .with_type('A').config(nameserver: '192.0.2.4', recurse: false)
+  end
+```
+
+The full list of configuration options can be found on the Dnsruby docs
+[(Config)](http://www.rubydoc.info/gems/dnsruby/Dnsruby/Config) and [(Resolver#initialize)](http://www.rubydoc.info/gems/dnsruby/Dnsruby/Resolver:initialize).
 
 ### Configuring connection timeout
 
