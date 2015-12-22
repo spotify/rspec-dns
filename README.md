@@ -122,7 +122,7 @@ Depending on the type of record, the following attributes may be available:
 If you try checking an attribute on a record that is non-existent (like checking the `rmailbx` on an `A` record), you'll get an error like this:
 
 ```text
-Failure/Error: it { is_expected.to have_dns.with_type('TXT').and_ftl(300).and_data('a=b') }
+Failure/Error: it { is_expected.to have_dns.with_type('TXT').and_ttl(300).and_data('a=b') }
   got 1 exception(s): undefined method `rmailbx' for #<Dnsruby::RR::IN::A:0x007f66a0339b00>
 ```
 
