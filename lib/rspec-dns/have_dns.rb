@@ -153,7 +153,7 @@ RSpec::Matchers.define :have_dns do
         resolver =  Dnsruby::Resolver.new(config)
         resolver.query_timeout = query_timeout
         resolver.do_caching = false
-        resolver.query(@_name, Dnsruby::Types.ANY)
+        resolver.query(@_name, _options[:type] || Dnsruby::Types.ANY)
       end
     rescue Exception => e
       if Dnsruby::NXDomain === e
