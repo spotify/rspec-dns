@@ -10,6 +10,16 @@ def stub_records(strings)
   allow(resolver).to receive_message_chain(:query, :answer).and_return(records)
 end
 
+def stub_records_authority(strings)
+  records = strings.map { |s| Dnsruby::RR.new_from_string(s) }
+  resolver = Dnsruby::Resolver.new
+  allow(Dnsruby::Resolver).to receive(:new) do
+    yield if block_given?
+    resolver
+  end
+  allow(resolver).to receive_message_chain(:query, :authority).and_return(records)
+end
+
 describe 'rspec-dns matchers' do
 
   describe '#have_dns' do
@@ -193,6 +203,14 @@ describe 'rspec-dns matchers' do
           sleep 3
         end
         expect('example.com').to have_dns.with_type('A')
+      end
+    end
+    context 'with in_authority chain' do
+      it 'can evalutate an NS record' do
+        stub_records_authority(['sub.example.com. 300 IN NS ns.sub.example.com.'])
+
+        expect('sub.example.com').to have_dns.with_type('NS').in_authority
+        expect('sub.example.com').to have_dns.with_type('NS').in_authority.and_domainname('ns.sub.example.com')
       end
     end
   end
