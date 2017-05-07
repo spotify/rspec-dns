@@ -13,7 +13,7 @@ end
 describe 'rspec-dns matchers' do
 
   describe '#have_dns' do
-    context 'with a sigle record' do
+    context 'with a single record' do
       it 'can evalutate an A record' do
         stub_records(['example.com 86400 A 192.0.2.4'])
 
