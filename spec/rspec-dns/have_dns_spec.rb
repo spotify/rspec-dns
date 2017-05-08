@@ -1,33 +1,13 @@
 require 'spec_helper'
 
-def stub_records(strings)
+def stub_records(strings, section=:answer)
   records = strings.map { |s| Dnsruby::RR.new_from_string(s) }
   resolver = Dnsruby::Resolver.new
   allow(Dnsruby::Resolver).to receive(:new) do
     yield if block_given?
     resolver
   end
-  allow(resolver).to receive_message_chain(:query, :answer).and_return(records)
-end
-
-def stub_records_authority(strings)
-  records = strings.map { |s| Dnsruby::RR.new_from_string(s) }
-  resolver = Dnsruby::Resolver.new
-  allow(Dnsruby::Resolver).to receive(:new) do
-    yield if block_given?
-    resolver
-  end
-  allow(resolver).to receive_message_chain(:query, :authority).and_return(records)
-end
-
-def stub_records_additional(strings)
-  records = strings.map { |s| Dnsruby::RR.new_from_string(s) }
-  resolver = Dnsruby::Resolver.new
-  allow(Dnsruby::Resolver).to receive(:new) do
-    yield if block_given?
-    resolver
-  end
-  allow(resolver).to receive_message_chain(:query, :additional).and_return(records)
+  allow(resolver).to receive_message_chain(:query, section).and_return(records)
 end
 
 describe 'rspec-dns matchers' do
@@ -217,7 +197,7 @@ describe 'rspec-dns matchers' do
     end
     context 'with in_authority chain' do
       it 'can evalutate an NS record' do
-        stub_records_authority(['sub.example.com. 300 IN NS ns.sub.example.com.'])
+        stub_records(['sub.example.com. 300 IN NS ns.sub.example.com.'], :authority)
 
         expect('sub.example.com').to have_dns.with_type('NS').in_authority
         expect('sub.example.com').to have_dns.with_type('NS').in_authority.and_domainname('ns.sub.example.com')
@@ -225,7 +205,7 @@ describe 'rspec-dns matchers' do
     end
     context 'with in_additional chain' do
       it 'can evalutate an A record' do
-        stub_records_additional(['ns.sub.example.com. 86400 A 192.0.2.5'])
+        stub_records(['ns.sub.example.com. 86400 A 192.0.2.5'], :additional)
 
         expect('ns.sub.example.com').to have_dns.in_additional.with_type('A')
         expect('ns.sub.example.com').to have_dns.in_additional.with_type('A').and_address('192.0.2.5')
