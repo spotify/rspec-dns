@@ -9,6 +9,8 @@ RSpec::Matchers.define :have_dns do
 
     if @authority
       @records = _records.authority
+    elsif @additional
+      @records = _records.additional
     else
       @records = _records.answer
     end
@@ -72,6 +74,10 @@ RSpec::Matchers.define :have_dns do
 
   chain :in_authority do
     @authority = true
+  end
+
+  chain :in_additional do
+    @additional = true
   end
 
   chain :at_least do |actual|

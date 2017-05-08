@@ -64,6 +64,7 @@ Currently the following chaining methods are supported:
 - refuse\_request
 - config
 - in\_zone\_file
+- in\_additional
 
 Here's some usage examples:
 
@@ -86,6 +87,11 @@ Here's some usage examples:
 
   it 'checks zone file("example.zone") with specified origin("example.com.")' do
     expect('example.com').to have_dns.with_type('A').in_zone_file('example.zone', 'example.com.')
+  end
+
+  it 'checks if "sub" subdomain is delegated to "ns.sub.example.com (192.0.2.5)",' do
+    expect('ns.sub.example.com').to have_dns.config(nameserver: 'ns.example.com', recurse: false)
+      .in_additional.with_type('A').and_address('192.0.2.5')
   end
 ```
 
