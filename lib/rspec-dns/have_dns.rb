@@ -7,7 +7,7 @@ RSpec::Matchers.define :have_dns do
     @dns = dns
     @exceptions = []
 
-    if @authority
+    if @authority || _records.authority.any?
       @records = _records.authority
     elsif @additional
       @records = _records.additional
