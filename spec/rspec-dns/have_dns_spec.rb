@@ -211,5 +211,21 @@ describe 'rspec-dns matchers' do
         expect('ns.sub.example.com').to have_dns.in_additional.with_type('A').and_address('192.0.2.5')
       end
     end
+    context 'with in_authority_or_answer chain' do
+      it 'can evalutate an NS record in authority' do
+        stub_records(['sub.example.com. 300 IN NS ns.sub.example.com.'], :authority)
+        stub_records([])
+
+        expect('sub.example.com').to have_dns.with_type('NS').in_authority_or_answer
+        expect('sub.example.com').to have_dns.with_type('NS').in_authority_or_answer.and_domainname('ns.sub.example.com')
+      end
+      it 'can evalutate an NS record in answer' do
+        stub_records(['sub.example.com. 300 IN NS ns.sub.example.com.'])
+        stub_records([], :authority)
+
+        expect('sub.example.com').to have_dns.with_type('NS').in_authority_or_answer
+        expect('sub.example.com').to have_dns.with_type('NS').in_authority_or_answer.and_domainname('ns.sub.example.com')
+      end
+    end
   end
 end
