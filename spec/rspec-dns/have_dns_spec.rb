@@ -226,6 +226,13 @@ describe 'rspec-dns matchers' do
         expect('sub.example.com').to have_dns.with_type('NS').in_authority_or_answer
         expect('sub.example.com').to have_dns.with_type('NS').in_authority_or_answer.and_domainname('ns.sub.example.com')
       end
+      it 'fails to evalutate an NS record in additional' do
+        stub_records(['sub.example.com. 300 IN NS ns.sub.example.com.'], :additional)
+        stub_records([], :authority)
+        stub_records([])
+
+        expect('sub.example.com').not_to have_dns.with_type('NS').in_authority_or_answer
+      end
     end
   end
 end
