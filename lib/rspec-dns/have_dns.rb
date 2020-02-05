@@ -7,13 +7,10 @@ RSpec::Matchers.define :have_dns do
     @dns = dns
     @exceptions = []
 
-    if @authority || _records.authority.any?
-      @records = _records.authority
-    elsif @additional
-      @records = _records.additional
-    else
-      @records = _records.answer
-    end
+    @records = []
+    @records.concat(_records.authority) if @authority
+    @records.concat(_records.additional) if @additional
+    @records.concat(_records.answer) if @answer || (!@authority && !@additional)
 
     results = @records.find_all do |record|
       matched = _options.all? do |option, value|
@@ -74,10 +71,22 @@ RSpec::Matchers.define :have_dns do
 
   chain :in_authority do
     @authority = true
+    @answer = @additional = false
   end
 
   chain :in_additional do
     @additional = true
+    @authority = @answer = false
+  end
+
+  chain :in_answer do
+    @answer = true
+    @authority = @additional = false
+  end
+
+  chain :in_authority_or_answer do
+    @authority = @answer = true
+    @additional = false
   end
 
   chain :at_least do |actual|
