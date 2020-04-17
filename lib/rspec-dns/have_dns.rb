@@ -154,6 +154,14 @@ RSpec::Matchers.define :have_dns do
                  @dns
                end
 
+    if _options[:type] == "CNAME"
+      begin
+        Dnsruby::Resolv.getaddresses(@_name)
+      rescue Dnsruby::NXDomain => e
+        @exceptions << "CNAME chain is not fully resolvable. This is potentially a dangling DNS record!"
+      end
+    end
+
     if @zone_file
       @_records = Dnsruby::Message.new
       rrs = Dnsruby::ZoneReader.new(@zone_origin).process_file(@zone_file)
